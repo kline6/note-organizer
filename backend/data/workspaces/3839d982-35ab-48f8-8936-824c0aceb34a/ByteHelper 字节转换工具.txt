@@ -1,0 +1,32 @@
+C# 工控电气上位机 零基础学习笔记（老师傅精讲版）
+三、ByteHelper 字节转换工具类全解析（工控高频使用）
+
+类整体作用：
+纯静态通用工具类，不依赖其他任何代码，专门处理 PLC、智能电表传回的寄存器数据，完成设备机器码与日常可读数值的互相转换。
+
+1. public static int RegistersToInt32(ushort high, ushort low)
+识名判义：Registers = 设备寄存器数据，ToInt32 = 转为完整整数
+通俗作用：电气设备会把一个完整整数拆成高低两段数据发送，此方法把两段短数字拼接成一整个完整整数
+代码含义：(high << 16) | low 把高位数据向左移位，再和低位数据合并，完成拼接
+
+2. public static void Int32ToRegisters(int value, out ushort high, out ushort low)
+识名判义：Int32 = 完整整数，ToRegisters = 转为寄存器分段数据
+通俗作用：和上面方法相反，把一整个完整整数，拆分成高低两段短数字，用于下发数据给电气设备
+
+3. public static float RegistersToFloat(ushort high, ushort low)
+识名判义：Registers 寄存器数据，ToFloat = 转为小数
+通俗作用：工控里电压、电流、功率、温度都是小数，将设备拆分发送的两段寄存器数据，拼接换算成日常使用的小数数值，是上位机最常用方法
+
+4. public static short ToInt16(ushort value)
+识名判义：转为 Int16 有符号数值
+通俗作用：设备传回的数据默认只能表示正数，此方法把无符号正数转为可识别正负数的标准数值，用来读取负温度、反向电流等负数数据
+
+5. public static ushort ToUInt16(short value)
+通俗作用：和上一个方法相反，把带正负的标准数值，转回设备可识别的纯正数格式
+
+6. public static string ToHexString(byte[] data)
+识名判义：ToHex = 转为十六进制，String = 文本格式
+通俗作用：串口收发的原始字节数据杂乱难懂，此方法把机器识别的字节数据，转换成程序员能看懂的十六进制字符串，专门用来调试通信报文、排查通信故障
+
+7. public static byte[] FromHexString(string hex)
+通俗作用：和上面方法相反，手动编写的十六进制指令文本，通过此方法转回设备能识别发送的字节数据
